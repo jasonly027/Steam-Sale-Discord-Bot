@@ -24,6 +24,10 @@ public class DiscordPojo implements IToFilter {
     // Necessary for POJO codec
     public DiscordPojo() {}
 
+    public DiscordPojo(long serverId, long channelId) {
+        this(serverId, channelId, 1);
+    }
+
     public DiscordPojo(long serverId, long channelId, int salesThreshold) {
         this.serverId = serverId;
         this.channelId = channelId;
