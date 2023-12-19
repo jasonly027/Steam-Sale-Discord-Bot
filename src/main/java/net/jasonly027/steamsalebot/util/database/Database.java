@@ -21,13 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Database {
-    // Connection information
-    private static final String DB_KEY = App.config.get(("DB_KEY"));
-    private static final String DB_NAME = "SteamSaleBot";
-    private static final String APPS_COLLECTION = "apps";
-    private static final String JUNCTION_COLLECTION = "junction";
-    private static final String DISCORD_COLLECTION = "discord";
-
     // Collections, i.e., tables
     private final MongoCollection<AppPojo> apps;
     private final MongoCollection<JunctionPojo> junction;
@@ -50,14 +43,24 @@ public class Database {
     private static final Database database = new Database();
 
     private Database() {
+        // Connection information
+        final String DB_KEY = App.config.get(("DB_KEY"));
+        final String DB_NAME = "SteamSaleBot";
+        final String APPS_COLLECTION = "apps";
+        final String JUNCTION_COLLECTION = "junction";
+        final String DISCORD_COLLECTION = "discord";
+
+        // Register POJOs
         CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
         CodecRegistry pojoCodecRegistry = CodecRegistries.fromProviders(
                 MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries.fromProviders(pojoCodecProvider));
 
+        // Establish connection
         MongoClient connection = MongoClients.create(DB_KEY);
         MongoDatabase db = connection.getDatabase(DB_NAME)
                 .withCodecRegistry(pojoCodecRegistry);
 
+        // Get collections
         apps = db.getCollection(APPS_COLLECTION, AppPojo.class);
         junction = db.getCollection(JUNCTION_COLLECTION, JunctionPojo.class);
         discord = db.getCollection(DISCORD_COLLECTION, DiscordPojo.class);
