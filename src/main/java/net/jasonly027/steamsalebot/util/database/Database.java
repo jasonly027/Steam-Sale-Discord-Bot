@@ -40,6 +40,7 @@ public class Database {
     public static final String SERVER_ID = "server_id";
     public static final String CHANNEL_ID = "channel_id";
     public static final String SALE_THRESHOLD = "sale_threshold";
+    public static final String IS_TRAILING_SALE_DAY = "is_trailing_sale_day";
 
     /*
         The database is a singleton, i.e., there is only once instance of it.
@@ -114,6 +115,48 @@ public class Database {
      */
     public static MongoCursor<AppPojo> getAllAppsCursor() {
         return getApps().find().cursor();
+    }
+
+    /**
+     * <p>
+     * Check if a sale alert should be sent to the specified server. Inverts the value of the
+     * <i>isTrailingSaleDay</i> field of a server entry in the <b>discord</b> collection
+     * if <i>isTrailingSaleDay</i> and <i>isOnSale</i> are dissimilar.
+     * </p>
+     * <p>There are two cases where <i>isTrailingSaleDay</i> and <i>isOnSale</i> are dissimilar: </p>
+     * <p>1. When it's the first day of a sale or when an app, which was freshly added to a server's
+     * tracked list and is currently undergoing a sale, is checked for its first time by that server.
+     * In this case, the app <b>is on sale</b> and it <b>is not a trailing sale day</b>.</p>
+     * <p>2. When it was previously known to a server that an app was on sale, but on this check,
+     * it is no longer on sale. In this case, the app <b>is no longer on sale</b> but it <b>was
+     * last known as a trailing sale day</b>.</p>
+     * <p>As mentioned earlier in the event of a dissimilarity, the <b>isTrailingSaleDay</b>
+     *  field of a server entry is flipped.</p>
+     * @param serverId id of the server
+     * @param isOnSale whether the app is currently on sale
+     * @return true if a sale alert should be sent
+     */
+    public static boolean shouldSendAlertAndUpdateTrailingSaleDay(long serverId, boolean isOnSale) {
+        Bson filterByServerId = Filters.eq(SERVER_ID, serverId);
+        DiscordPojo serverInfo = getDiscord().find(filterByServerId).first();
+        // Check if the server entry exists
+        if (serverInfo == null) {
+            return false;
+        }
+
+        boolean isTrailingSaleDay = serverInfo.isTrailingSaleDay;
+        // An alert should be sent if there's a sale and it's not a trailing sale day
+        boolean shouldSendAlert = isOnSale && !isTrailingSaleDay;
+
+        // If dissimilar truth values, invert isTrailingSaleDay and update the entry
+        // in the server collection
+        if (isOnSale && !isTrailingSaleDay || !isOnSale && isTrailingSaleDay) {
+            isTrailingSaleDay = !isTrailingSaleDay;
+            Bson fieldToUpdate = Updates.set(IS_TRAILING_SALE_DAY, isTrailingSaleDay);
+            getDiscord().updateOne(filterByServerId, fieldToUpdate);
+        }
+
+        return shouldSendAlert;
     }
 
     /**
