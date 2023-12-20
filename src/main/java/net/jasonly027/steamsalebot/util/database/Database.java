@@ -21,13 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Database {
-    // Connection information
-    private static final String DB_KEY = App.config.get(("DB_KEY"));
-    private static final String DB_NAME = "SteamSaleBot";
-    private static final String APPS_COLLECTION = "apps";
-    private static final String JUNCTION_COLLECTION = "junction";
-    private static final String DISCORD_COLLECTION = "discord";
-
     // Collections, i.e., tables
     private final MongoCollection<AppPojo> apps;
     private final MongoCollection<JunctionPojo> junction;
@@ -40,6 +33,7 @@ public class Database {
     public static final String SERVER_ID = "server_id";
     public static final String CHANNEL_ID = "channel_id";
     public static final String SALE_THRESHOLD = "sale_threshold";
+    public static final String IS_TRAILING_SALE_DAY = "is_trailing_sale_day";
 
     /*
         The database is a singleton, i.e., there is only once instance of it.
@@ -49,14 +43,24 @@ public class Database {
     private static final Database database = new Database();
 
     private Database() {
+        // Connection information
+        final String DB_KEY = App.config.get(("DB_KEY"));
+        final String DB_NAME = "SteamSaleBot";
+        final String APPS_COLLECTION = "apps";
+        final String JUNCTION_COLLECTION = "junction";
+        final String DISCORD_COLLECTION = "discord";
+
+        // Register POJOs
         CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
         CodecRegistry pojoCodecRegistry = CodecRegistries.fromProviders(
                 MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries.fromProviders(pojoCodecProvider));
 
+        // Establish connection
         MongoClient connection = MongoClients.create(DB_KEY);
         MongoDatabase db = connection.getDatabase(DB_NAME)
                 .withCodecRegistry(pojoCodecRegistry);
 
+        // Get collections
         apps = db.getCollection(APPS_COLLECTION, AppPojo.class);
         junction = db.getCollection(JUNCTION_COLLECTION, JunctionPojo.class);
         discord = db.getCollection(DISCORD_COLLECTION, DiscordPojo.class);
@@ -114,6 +118,48 @@ public class Database {
      */
     public static MongoCursor<AppPojo> getAllAppsCursor() {
         return getApps().find().cursor();
+    }
+
+    /**
+     * <p>
+     * Check if a sale alert should be sent to the specified server. Inverts the value of the
+     * <i>isTrailingSaleDay</i> field of a server entry in the <b>discord</b> collection
+     * if <i>isTrailingSaleDay</i> and <i>isOnSale</i> are dissimilar.
+     * </p>
+     * <p>There are two cases where <i>isTrailingSaleDay</i> and <i>isOnSale</i> are dissimilar: </p>
+     * <p>1. When it's the first day of a sale or when an app, which was freshly added to a server's
+     * tracked list and is currently undergoing a sale, is checked for its first time by that server.
+     * In this case, the app <b>is on sale</b> and it <b>is not a trailing sale day</b>.</p>
+     * <p>2. When it was previously known to a server that an app was on sale, but on this check,
+     * it is no longer on sale. In this case, the app <b>is no longer on sale</b> but it <b>was
+     * last known as a trailing sale day</b>.</p>
+     * <p>As mentioned earlier in the event of a dissimilarity, the <b>isTrailingSaleDay</b>
+     *  field of a server entry is flipped.</p>
+     * @param serverId id of the server
+     * @param isOnSale whether the app is currently on sale
+     * @return true if a sale alert should be sent
+     */
+    public static boolean shouldSendAlertAndUpdateTrailingSaleDay(long serverId, boolean isOnSale) {
+        Bson filterByServerId = Filters.eq(SERVER_ID, serverId);
+        DiscordPojo serverInfo = getDiscord().find(filterByServerId).first();
+        // Check if the server entry exists
+        if (serverInfo == null) {
+            return false;
+        }
+
+        boolean isTrailingSaleDay = serverInfo.isTrailingSaleDay;
+        // An alert should be sent if there's a sale and it's not a trailing sale day
+        boolean shouldSendAlert = isOnSale && !isTrailingSaleDay;
+
+        // If dissimilar truth values, invert isTrailingSaleDay and update the entry
+        // in the server collection
+        if (isOnSale && !isTrailingSaleDay || !isOnSale && isTrailingSaleDay) {
+            isTrailingSaleDay = !isTrailingSaleDay;
+            Bson fieldToUpdate = Updates.set(IS_TRAILING_SALE_DAY, isTrailingSaleDay);
+            getDiscord().updateOne(filterByServerId, fieldToUpdate);
+        }
+
+        return shouldSendAlert;
     }
 
     /**
