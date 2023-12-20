@@ -6,6 +6,6 @@ public class App {
     public static final Dotenv config = Dotenv.configure().load();
 
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        SteamSaleBot.getInstance();
     }
 }
