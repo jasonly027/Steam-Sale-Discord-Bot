@@ -6,6 +6,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SteamApi {
@@ -57,9 +58,10 @@ public class SteamApi {
     }
 
     /**
-     * Get app name of the specified <b>appId</b>.
+     * Get the app name of the specified <b>appId</b>.
      * @param appId id of the app
-     * @return the name of the app or <b>null</b> if the appId was invalid
+     * @return the name of the app or <b>null</b> if either the appId was invalid or
+     * the app is free.
      * @throws IOException If the response status code was not 200, or if an I/O error
      * occurs when sending or receiving
      * @throws InterruptedException if the operation is interrupted
@@ -67,8 +69,21 @@ public class SteamApi {
     public static String getAppName(long appId) throws IOException, InterruptedException {
         String appUrl = "https://store.steampowered.com/api/appdetails?appids=" + appId;
         HttpResponse<String> response = sendHttpRequest(createHttpGetRequest(appUrl));
-        AppInfo appInfo = getMapper().readValue(response.body(), AppInfo.class);
+        JsonNode root = getMapper().readTree(response.body());
+        String appField = root.fieldNames().next();
+        root = root.get(appField);
 
-        return appInfo.getName();
+        boolean isSuccess = root.get("success").asBoolean();
+        if (!isSuccess) {
+            return null;
+        }
+
+        JsonNode data = root.get("data");
+        boolean isFree = data.get("is_free").asBoolean();
+        if (isFree) {
+            return null;
+        }
+
+        return data.get("name").toString();
     }
 }
