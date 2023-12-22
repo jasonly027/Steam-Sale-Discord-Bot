@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.jasonly027.steamsalebot.commands.slash.AddApps;
 import net.jasonly027.steamsalebot.commands.slash.Bind;
+import net.jasonly027.steamsalebot.commands.slash.Help;
 import net.jasonly027.steamsalebot.commands.slash.SetThreshold;
 import net.jasonly027.steamsalebot.commands.slash.SlashCommand;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +16,8 @@ public class CommandManager extends ListenerAdapter {
     private static final SlashCommand[] commands = {
             new SetThreshold(),
             new Bind(),
-            new AddApps()
+            new AddApps(),
+            new Help()
     };
 
     // On bot startup, register commands to all joined guilds
