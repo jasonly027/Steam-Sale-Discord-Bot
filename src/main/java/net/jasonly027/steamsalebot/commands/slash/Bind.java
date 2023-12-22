@@ -12,7 +12,7 @@ public class Bind extends SlashCommand {
     private static final String CHANNEL = "channel";
 
     public Bind() {
-        super("bind", "Set the channel to where alerts are sent");
+        super("bind", "Set the channel to where alerts are sent.");
 
         OptionData channel = new OptionData(OptionType.CHANNEL,
                 CHANNEL, "The channel to where alerts are sent", true)

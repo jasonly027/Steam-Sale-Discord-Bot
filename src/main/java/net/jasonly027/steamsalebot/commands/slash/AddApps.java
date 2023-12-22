@@ -19,10 +19,10 @@ public class AddApps extends SlashCommand {
     private final String APP_IDS = "app_ids";
 
     public AddApps() {
-        super("add_apps", "Add apps by their appID to the tracker.");
+        super("add_apps", "Add apps by their app ID to the tracker.");
 
         OptionData appId = new OptionData(OptionType.STRING, APP_IDS,
-                "The appIDs of apps to be added, separated by commas. E.g., 400,440,1868140", true)
+                "The app IDs of apps to be added, separated by commas. E.g., 400,440,1868140", true)
                 .setMaxLength(150);
         addOptions(appId);
     }
