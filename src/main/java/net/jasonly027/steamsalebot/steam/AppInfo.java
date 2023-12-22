@@ -148,9 +148,9 @@ public class AppInfo {
             }
 
             JsonNode data = root.get("data");
-            appInfo.setName(data.get("name").toString())
-                    .setBannerUrl(data.get("header_image").toString())
-                    .setStorePageUrl("https://store.steampowered.com/app/" + data.get("steam_appid").toString())
+            appInfo.setName(data.get("name").textValue())
+                    .setBannerUrl(data.get("header_image").textValue())
+                    .setStorePageUrl("https://store.steampowered.com/app/" + data.get("steam_appid").textValue())
                     .setRecommendationsCount(data.get("recommendations").get("total").asInt())
                     .setFree(data.get("is_free").asBoolean());
 
@@ -162,8 +162,8 @@ public class AppInfo {
 
             JsonNode priceOverview = data.get("price_overview");
             appInfo.setDiscountPercent(priceOverview.get("discount_percent").asInt())
-                    .setOriginalPrice(priceOverview.get("initial_formatted").toString())
-                    .setSalePrice(priceOverview.get("final_formatted").toString());
+                    .setOriginalPrice(priceOverview.get("initial_formatted").textValue())
+                    .setSalePrice(priceOverview.get("final_formatted").textValue());
 
             return appInfo;
         }

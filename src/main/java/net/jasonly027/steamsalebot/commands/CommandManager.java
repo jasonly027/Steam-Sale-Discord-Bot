@@ -4,6 +4,8 @@ import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.jasonly027.steamsalebot.commands.slash.AddApps;
+import net.jasonly027.steamsalebot.commands.slash.Bind;
 import net.jasonly027.steamsalebot.commands.slash.Help;
 import net.jasonly027.steamsalebot.commands.slash.SetThreshold;
 import net.jasonly027.steamsalebot.commands.slash.SlashCommand;
@@ -13,6 +15,8 @@ public class CommandManager extends ListenerAdapter {
     // Add commands here
     private static final SlashCommand[] commands = {
             new SetThreshold(),
+            new Bind(),
+            new AddApps(),
             new Help()
     };
 
