@@ -208,25 +208,31 @@ public class Database {
 
     /**
      * Tries to add all the apps from the iterator. If an insertion fails before the
-     * iterator is exhausted, the method end prematurely.
+     * iterator is exhausted, the method ends prematurely and <b>unsuccessfulApp</b>
+     * is updated.
      * @param serverId id of the server
      * @param appPojoIterator iterator of apps to add
+     * @param unsuccessfulApp this POJOs fields will be set by the first app with a failed insertion
+     *                        if there's a failure. If there's no failure, appId will be assigned -1.
      * @return a list of successfully added apps. If there were no insertion fails, the list
      * will be the same as the elements from the iterator.
      */
-    public static List<AppPojo> addAppIdsToAServer(long serverId, Iterator<AppPojo> appPojoIterator) {
+    public static List<AppPojo> addAppIdsToAServer(long serverId, Iterator<AppPojo> appPojoIterator, AppPojo unsuccessfulApp) {
         List<AppPojo> successfullyAddedPojos = new ArrayList<>();
         boolean successfullyAdded = true;
         while (appPojoIterator.hasNext() && successfullyAdded) {
             AppPojo appPojo = appPojoIterator.next();
             // If insertion fails, end method prematurely
             if (!addAppIdToAServer(serverId, appPojo.appId, appPojo.appName)) {
+                unsuccessfulApp.appId = appPojo.appId;
+                unsuccessfulApp.appName = appPojo.appName;
                 successfullyAdded = false;
                 continue;
             }
             successfullyAddedPojos.add(appPojo);
         }
 
+        unsuccessfulApp.appId = -1;
         return successfullyAddedPojos;
     }
 

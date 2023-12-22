@@ -84,6 +84,6 @@ public class SteamApi {
             return null;
         }
 
-        return data.get("name").toString();
+        return data.get("name").textValue();
     }
 }
