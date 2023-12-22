@@ -277,6 +277,10 @@ public class Database {
      * @return true if the entries don't exist in the junction collection anymore
      */
     public static boolean removeAppIdsFromAServer(long serverId, List<Long> appIds) {
+        if (appIds.size() == 1) {
+            return removeAppIdFromAServer(serverId, appIds.get(0));
+        }
+
         Bson filterByServerIdAndAppIds = Filters.and(
                 Filters.eq(SERVER_ID, serverId),
                 Filters.in(APP_ID, appIds)
