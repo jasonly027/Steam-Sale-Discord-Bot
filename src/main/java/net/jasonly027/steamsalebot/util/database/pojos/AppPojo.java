@@ -36,11 +36,7 @@ public class AppPojo implements IToFilter {
 
     @Override
     public String toString() {
-        return "AppPojo{" +
-                "id=" + id +
-                ", appId=" + appId +
-                ", appName='" + appName + '\'' +
-                '}';
+        return appName + " (" + appId + ")";
     }
 
     @Override
