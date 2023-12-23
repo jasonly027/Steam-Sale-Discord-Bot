@@ -11,7 +11,9 @@ import net.jasonly027.steamsalebot.util.database.Database;
 public class SetThreshold extends SlashCommand {
     private static final String THRESHOLD = "threshold";
 
-    public SetThreshold(){
+    private static final SetThreshold command = new SetThreshold();
+
+    private SetThreshold(){
         super("set_discount_threshold",
                 "Set the minimum discount percentage warranting an alert of sale price.");
 
@@ -21,6 +23,10 @@ public class SetThreshold extends SlashCommand {
                 .setMinValue(1)
                 .setMaxValue(100);
         addOptions(setThreshold);
+    }
+
+    public static SetThreshold getCommand() {
+        return command;
     }
 
     @Override
@@ -42,13 +48,13 @@ public class SetThreshold extends SlashCommand {
         event.getHook().sendMessageEmbeds(retMessage).queue();
     }
 
-    public static MessageEmbed createFailureMessage(){
+    private static MessageEmbed createFailureMessage(){
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle("Error").setDescription("Failed to set the discount threshold. Please try again.");
         return builder.build();
     }
 
-    public static MessageEmbed createSuccessMessage(){
+    private static MessageEmbed createSuccessMessage(){
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle("Success").setDescription("Successfully set the discount threshold.");
         return builder.build();

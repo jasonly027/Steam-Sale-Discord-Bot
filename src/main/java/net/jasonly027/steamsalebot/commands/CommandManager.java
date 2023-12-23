@@ -10,12 +10,12 @@ import org.jetbrains.annotations.NotNull;
 public class CommandManager extends ListenerAdapter {
     // Add commands here
     private static final SlashCommand[] commands = {
-            new SetThreshold(),
-            new Bind(),
-            new AddApps(),
-            new RemoveApps(),
-            new Help(),
-            new TestDailyCheck()
+            SetThreshold.getCommand(),
+            Bind.getCommand(),
+            AddApps.getCommand(),
+            RemoveApps.getCommand(),
+            Help.getCommand(),
+            TestDailyCheck.getCommand()
     };
 
     // On bot startup, register commands to all joined guilds
