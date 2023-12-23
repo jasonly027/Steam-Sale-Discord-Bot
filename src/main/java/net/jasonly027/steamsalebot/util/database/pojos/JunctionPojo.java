@@ -18,19 +18,28 @@ public class JunctionPojo implements IToFilter {
     @BsonProperty(value = Database.SERVER_ID)
     public long serverId;
 
+    @BsonProperty(value = Database.IS_TRAILING_SALE_DAY)
+    public boolean isTrailingSaleDay;
+
     // Necessary for POJO codec
     public JunctionPojo() {}
 
     public JunctionPojo(long appId, long serverId) {
+        this(appId, serverId, false);
+    }
+
+    public JunctionPojo(long appId, long serverId, boolean isTrailingSaleDay) {
         this.appId = appId;
         this.serverId = serverId;
+        this.isTrailingSaleDay = isTrailingSaleDay;
     }
 
     @Override
     public Bson toFilter() {
         return Filters.and(
                 Filters.eq(Database.APP_ID, appId),
-                Filters.eq(Database.SERVER_ID, serverId)
+                Filters.eq(Database.SERVER_ID, serverId),
+                Filters.eq(Database.IS_TRAILING_SALE_DAY, isTrailingSaleDay)
         );
     }
 
@@ -40,6 +49,7 @@ public class JunctionPojo implements IToFilter {
                 "id=" + id +
                 ", appId=" + appId +
                 ", serverId=" + serverId +
+                ", isTrailingSaleDay=" + isTrailingSaleDay +
                 '}';
     }
 
@@ -47,12 +57,12 @@ public class JunctionPojo implements IToFilter {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        JunctionPojo junction = (JunctionPojo) o;
-        return appId == junction.appId && serverId == junction.serverId && Objects.equals(id, junction.id);
+        JunctionPojo that = (JunctionPojo) o;
+        return appId == that.appId && serverId == that.serverId && isTrailingSaleDay == that.isTrailingSaleDay && Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, appId, serverId);
+        return Objects.hash(id, appId, serverId, isTrailingSaleDay);
     }
 }
