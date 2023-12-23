@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.jasonly027.steamsalebot.commands.CommandManager;
+import net.jasonly027.steamsalebot.events.OnDailyCheck;
 import net.jasonly027.steamsalebot.events.OnGuildJoinLeave;
 
 public class SteamSaleBot {
@@ -19,7 +20,8 @@ public class SteamSaleBot {
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                 .addEventListeners(
                         new CommandManager(),
-                        new OnGuildJoinLeave()
+                        new OnGuildJoinLeave(),
+                        new OnDailyCheck()
                 );
 
         shardManager = builder.build();

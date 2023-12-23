@@ -14,8 +14,8 @@ public class CommandManager extends ListenerAdapter {
             new Bind(),
             new AddApps(),
             new RemoveApps(),
-            new AddApps(),
-            new Help()
+            new Help(),
+            new TestDailyCheck()
     };
 
     // On bot startup, register commands to all joined guilds
