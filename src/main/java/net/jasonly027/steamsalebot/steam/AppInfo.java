@@ -150,7 +150,7 @@ public class AppInfo {
             JsonNode data = root.get("data");
             appInfo.setName(data.get("name").textValue())
                     .setBannerUrl(data.get("header_image").textValue())
-                    .setStorePageUrl("https://store.steampowered.com/app/" + data.get("steam_appid").textValue())
+                    .setStorePageUrl("https://store.steampowered.com/app/" + data.get("steam_appid").asInt())
                     .setRecommendationsCount(data.get("recommendations").get("total").asInt())
                     .setFree(data.get("is_free").asBoolean());
 
