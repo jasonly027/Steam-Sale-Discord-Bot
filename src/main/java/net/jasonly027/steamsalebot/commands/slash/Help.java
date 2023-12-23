@@ -5,8 +5,14 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 public class Help extends SlashCommand {
-    public Help(){
+    private static final Help command = new Help();
+
+    private Help(){
         super("help", "Show a list of commands and their descriptions.");
+    }
+
+    public static Help getCommand() {
+        return command;
     }
 
     @Override
@@ -14,7 +20,7 @@ public class Help extends SlashCommand {
         event.replyEmbeds(createMessage()).queue();
     }
 
-    public static MessageEmbed createMessage(){
+    private static MessageEmbed createMessage(){
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle("Commands")
                 .addField("bind", "Binds the bot to a specific channel.", false)

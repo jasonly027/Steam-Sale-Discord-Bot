@@ -14,7 +14,9 @@ import java.util.stream.Collectors;
 public class RemoveApps extends SlashCommand {
     private final String APP_IDS = "app_ids";
 
-    public RemoveApps() {
+    private static final RemoveApps command = new RemoveApps();
+
+    private RemoveApps() {
         super("remove_apps", "Remove apps by their app ID from the tracker.");
 
         OptionData appId = new OptionData(OptionType.STRING, APP_IDS,
@@ -23,14 +25,18 @@ public class RemoveApps extends SlashCommand {
         addOptions(appId);
     }
 
-    public static MessageEmbed createSuccessMessage() {
+    public static RemoveApps getCommand() {
+        return command;
+    }
+
+    private static MessageEmbed createSuccessMessage() {
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle("Successfully removed app IDs")
                 .setDescription("Specified apps have been removed if they were being tracked.");
         return builder.build();
     }
 
-    public static MessageEmbed createFailureMessage() {
+    private static MessageEmbed createFailureMessage() {
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle("Failed to remove app IDs")
                 .setDescription("Removal unexpectedly failed. Please try again.");
@@ -38,7 +44,7 @@ public class RemoveApps extends SlashCommand {
     }
 
     // Create message for when any one of the inputted app IDs contains a non-integer
-    public static MessageEmbed createInvalidAppIdsMessage() {
+    private static MessageEmbed createInvalidAppIdsMessage() {
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle("Failed to remove app IDs")
                 .setDescription("One or more of the app IDs contains non-integers. "

@@ -18,7 +18,9 @@ import java.util.List;
 public class AddApps extends SlashCommand {
     private final String APP_IDS = "app_ids";
 
-    public AddApps() {
+    private static final AddApps command = new AddApps();
+
+    private AddApps() {
         super("add_apps", "Add apps by their app ID to the tracker.");
 
         OptionData appId = new OptionData(OptionType.STRING, APP_IDS,
@@ -27,8 +29,12 @@ public class AddApps extends SlashCommand {
         addOptions(appId);
     }
 
+    public static AddApps getCommand() {
+        return command;
+    }
+
     // Create message indicating which apps were successfully/unsuccessfully added
-    public static MessageEmbed createSuccessMessage(List<AppPojo> successfulApps, List<Long> badApps) {
+    private static MessageEmbed createSuccessMessage(List<AppPojo> successfulApps, List<Long> badApps) {
         int totalApps = successfulApps.size() + badApps.size();
 
         // Create a field listing all the successfully added apps
@@ -60,7 +66,7 @@ public class AddApps extends SlashCommand {
     }
 
     // Create message for when any one of the inputted app IDs contains a non-integer
-    public static MessageEmbed createInvalidAppIdsMessage() {
+    private static MessageEmbed createInvalidAppIdsMessage() {
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle("Failed to add app IDs")
                 .setDescription("One or more of the app IDs contains non-integers. "

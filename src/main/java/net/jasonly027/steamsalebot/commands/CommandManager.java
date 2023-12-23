@@ -3,7 +3,6 @@ package net.jasonly027.steamsalebot.commands;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.jasonly027.steamsalebot.commands.slash.*;
 import org.jetbrains.annotations.NotNull;
@@ -11,14 +10,15 @@ import org.jetbrains.annotations.NotNull;
 public class CommandManager extends ListenerAdapter {
     // Add commands here
     private static final SlashCommand[] commands = {
-            new SetThreshold(),
-            new Bind(),
-            new AddApps(),
-            new RemoveApps(),
-            new Help(),
+            SetThreshold.getCommand(),
+            Bind.getCommand(),
+            AddApps.getCommand(),
+            RemoveApps.getCommand(),
+            Help.getCommand(),
             ClearAppsTracking.getCommand(),
-            new TestDailyCheck()
+            TestDailyCheck.getCommand()
     };
+
     // If a command uses string select menu, add it here
     private static final StringSelectMenuInteraction[] stringSelectMenuCommands = {
             ClearAppsTracking.getCommand()
