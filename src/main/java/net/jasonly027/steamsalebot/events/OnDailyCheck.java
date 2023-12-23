@@ -38,26 +38,24 @@ public class OnDailyCheck extends ListenerAdapter {
                 getInitialDelay(), CHECK_INTERVAL_IN_MINUTES, TimeUnit.MINUTES);
     }
 
-    // Get the time in minutes until the next 3:00 P.M.
+    // Get the time in minutes until the next 10:05 A.M.
     public static long getInitialDelay() {
-        final int HOUR_OF_THE_DAY_TO_CHECK = 15;
-        final int MINUTE_OF_THE_HOUR_TO_CHECK = 0;
+        final int HOUR_OF_THE_DAY_TO_CHECK = 10;
+        final int MINUTE_OF_THE_HOUR_TO_CHECK = 5;
 
-        LocalTime now = LocalTime.now();
-        LocalTime threePm = LocalTime.of(HOUR_OF_THE_DAY_TO_CHECK, MINUTE_OF_THE_HOUR_TO_CHECK);
-        LocalDateTime nextThreePm;
-        if (now.isBefore(threePm)) {
-            nextThreePm = LocalDateTime.of(LocalDate.now(), threePm);
+        LocalTime nowTime = LocalTime.now();
+        LocalTime thenTime = LocalTime.of(HOUR_OF_THE_DAY_TO_CHECK, MINUTE_OF_THE_HOUR_TO_CHECK, 0);
+        LocalDateTime nextThenDay;
+        if (nowTime.isBefore(thenTime)) {
+            nextThenDay = LocalDateTime.of(LocalDate.now(), thenTime);
         } else {
-            nextThreePm = LocalDateTime.of(LocalDate.now().plusDays(1), threePm);
+            nextThenDay = LocalDateTime.of(LocalDate.now().plusDays(1), thenTime);
         }
-
-        return ChronoUnit.MINUTES.between(now, nextThreePm);
+        return ChronoUnit.MINUTES.between(LocalDateTime.now(), nextThenDay);
     }
 
     public static void startDailyCheck() {
-        MongoCursor<AppPojo> cursor = Database.getAllAppsCursor();
-        scheduler.schedule(() -> doDailyCheckChunk(cursor), 0, TimeUnit.MINUTES);
+        doDailyCheckChunk(Database.getAllAppsCursor());
     }
 
     /*
@@ -72,13 +70,13 @@ public class OnDailyCheck extends ListenerAdapter {
         int calls = 0;
         // Use this cursor until it has been exhausted or the max number of calls
         // specified for a chunk has been reached.
-        while (calls <= CALLS_PER_INTERVAL && appCursor.hasNext()) {
+        while (calls < CALLS_PER_INTERVAL && appCursor.hasNext()) {
             AppPojo appPojo = appCursor.next();
             AppInfo appInfo = null;
             // API Call - Skip if call fails
             try {
                 appInfo = SteamApi.getAppInfo(appPojo.appId);
-            } catch (IOException | InterruptedException ignored) {System.out.println("Api Failed at doDailyChunk");}
+            } catch (IOException | InterruptedException ignored) {}
             if (appInfo == null || !appInfo.isSuccess()) {
                 ++calls;
                 continue;
@@ -121,7 +119,7 @@ public class OnDailyCheck extends ListenerAdapter {
                     TextChannel textChannel = server.getTextChannelById(discordPojo.channelId);
                     if (textChannel == null) {
                         DefaultGuildChannelUnion channel = server.getDefaultChannel();
-                        if (channel.getType() != ChannelType.TEXT) {
+                        if (channel == null || channel.getType() != ChannelType.TEXT) {
                             continue;
                         }
                         textChannel = channel.asTextChannel();
@@ -148,9 +146,9 @@ public class OnDailyCheck extends ListenerAdapter {
                         app.getStorePageUrl())
                 .setColor(getColorBySalePercentage(app.getDiscountPercent()))
                 .setImage(app.getBannerUrl())
-                .addField("Original Price:", app.getOriginalPrice(), true)
-                .addField("Sale Price:", app.getSalePrice(), true)
-                .addField("Recommendations:", String.valueOf(app.getRecommendationsCount()), true);
+                .addField("Original Price", app.getOriginalPrice(), true)
+                .addField("Sale Price", app.getSalePrice(), true)
+                .addField("Reviews", String.valueOf(app.getRecommendationsCount()), true);
         return builder.build();
     }
 
