@@ -8,30 +8,34 @@ import java.util.List;
 import static net.jasonly027.steamsalebot.util.database.Database.getAppsTrackedByAServer;
 
 public class ListApps extends SlashCommand {
+    private static final ListApps command = new ListApps();
 
-    public ListApps(){
-        super("list_apps", "List all the Steam apps you are keeping track of.");
+    private ListApps(){
+        super("list_apps", "List all the apps currently being tracked.");
+    }
+
+    public static ListApps getCommand() {
+        return command;
     }
 
     @Override
     public void doInteraction(SlashCommandInteractionEvent event) {
+        event.deferReply().queue();
         long serverId = event.getGuild().getIdLong();
-        event.replyEmbeds(createMessage(serverId)).queue();
+        event.getHook().sendMessageEmbeds(createMessage(serverId)).queue();
     }
 
-    public static MessageEmbed createMessage(long serverId){
+    private static MessageEmbed createMessage(long serverId){
         EmbedBuilder builder = new EmbedBuilder()
-                .setTitle("List of Apps")
-                .setDescription("List of apps you are keeping track of.");
-
+                .setTitle("List of Apps");
         // Loop to addField for each game being tracked
         List<AppPojo> listOfApps = getAppsTrackedByAServer(serverId);
-        if(listOfApps.isEmpty()) {
-            builder.addField("No Apps Tracked", "No apps are currently being tracked.", true);
+        if (listOfApps.isEmpty()) {
+            builder.addField("No Apps Tracked", "No apps are currently being tracked.", false);
         } else {
-            for (AppPojo app : listOfApps) {
-                builder.addField(app.appName, "App Id: " + app.appId, true);
-            }
+            StringBuilder stringBuilder = new StringBuilder();
+            listOfApps.forEach((app) -> stringBuilder.append(app).append('\n'));
+            builder.setDescription(stringBuilder.toString());
         }
         return builder.build();
     }
