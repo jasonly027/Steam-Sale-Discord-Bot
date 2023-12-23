@@ -22,9 +22,28 @@ public class Help extends SlashCommand {
 
     private static MessageEmbed createMessage(){
         EmbedBuilder builder = new EmbedBuilder()
-                .setTitle("Commands")
-                .addField("bind", "Binds the bot to a specific channel.", false)
-                .addField("set_threshold", "Set the minimum discount percentage warranting an alert of sale price.", false);
+                .setTitle("Commands and FAQ")
+                .addField("/bind <text_channel>", "Set the channel to where sale alerts are sent. "
+                        + "By default, sends to the default channel.", false)
+                .addField("/set_discount_threshold <percentage>",
+                        "Set the minimum discount percentage warranting an alert of an app sale. "
+                                + "By default, the threshold is 1%", false)
+                .addField("/add_apps <appId,appId,...>",
+                        "Add comma separated app IDs to the tracker.", false)
+                .addField("/remove_apps <appId,appId,...>",
+                        "Remove comma separated app IDs from the tracker.", false)
+                .addField("/list_apps",
+                        "List all the apps currently being tracked.", false)
+                .addField("/clear_apps",
+                        "Clear the tracking list.", false)
+                .addField("How often does the bot check for sales?",
+                        "The bot checks for sales every day at about **10:05 AM (PDT)**.", true)
+                .addField("Why aren't alerts showing up?",
+                        "Reconfigure your discount threshold in case it is too high. "
+                                + "Additionally, try rebinding to a text channel.", true)
+                .addField("The app is still on sale but there wasn't an alert.",
+                        "Alerts for an app are only sent on the first day of a sale duration "
+                                + "or, when added *during* a sale, on the following daily check.", true);
         return builder.build();
     }
 }
