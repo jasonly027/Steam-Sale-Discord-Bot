@@ -121,8 +121,35 @@ public class Database {
     }
 
     /**
+     * Gets a MongoCursor (iterator) for iterating through all entries in the
+     * <b>junction</b> collection with the specified <i>appId</i>. The
+     * cursor <b>MUST</b> be closed with its <i>close</i> method, or preferably,
+     * used through a try-with-resources statement
+     * @param appId id of app
+     * @return a cursor for iterating through the filtered entries in the
+     * <b>junction</b> collection
+     */
+    public static MongoCursor<JunctionPojo> getAllJunctionsWithAppIdOf(long appId) {
+        Bson filterByAppId = Filters.eq(APP_ID, appId);
+        return getJunction().find(filterByAppId).cursor();
+    }
+
+    /**
+     * Get an entry from the <b>discord</b> collection matching the specified
+     * <i>serverId</i>
+     * @param serverId id of the server
+     * @return an entry from the discord collection or null if none matched
+     * the specified <i>serverId</i>
+     */
+    public static DiscordPojo getDiscordPojo(long serverId) {
+        Bson filterByServerId = Filters.eq(SERVER_ID, serverId);
+        return getDiscord().find(filterByServerId).first();
+    }
+
+    /**
      * <p>
-     * Check if a sale alert should be sent to the specified server. Inverts the value of the
+     * Check if a sale alert should be sent to the specified server. A "sale" could literally mean
+     * there's a sale or if the app is currently free. Inverts the value of the
      * <i>isTrailingSaleDay</i> field of a server entry in the <b>discord</b> collection
      * if <i>isTrailingSaleDay</i> and <i>isOnSale</i> are dissimilar.
      * </p>
@@ -137,26 +164,37 @@ public class Database {
      *  field of a server entry is flipped.</p>
      * @param serverId id of the server
      * @param isOnSale whether the app is currently on sale
+     * @param discountPercent discount percent of the app
      * @return true if a sale alert should be sent
      */
-    public static boolean shouldSendAlertAndUpdateTrailingSaleDay(long serverId, boolean isOnSale) {
-        Bson filterByServerId = Filters.eq(SERVER_ID, serverId);
-        DiscordPojo serverInfo = getDiscord().find(filterByServerId).first();
-        // Check if the server entry exists
+    public static boolean shouldSendAlertAndUpdateTrailingSaleDay(long serverId, long appId,
+                                                                  boolean isOnSale, int discountPercent) {
+        Bson filterByServerIdAndAppId = Filters.and(
+                Filters.eq(SERVER_ID, serverId),
+                Filters.eq(APP_ID, appId)
+        );
+        JunctionPojo junctionInfo = getJunction().find(filterByServerIdAndAppId).first();
+        // Check if the junction entry exists
+        if (junctionInfo == null) {
+            return false;
+        }
+
+        DiscordPojo serverInfo = getDiscordPojo(serverId);
         if (serverInfo == null) {
             return false;
         }
 
-        boolean isTrailingSaleDay = serverInfo.isTrailingSaleDay;
+        boolean isTrailingSaleDay = junctionInfo.isTrailingSaleDay;
+        boolean doesPassThreshold = discountPercent >= serverInfo.salesThreshold;
         // An alert should be sent if there's a sale and it's not a trailing sale day
-        boolean shouldSendAlert = isOnSale && !isTrailingSaleDay;
+        boolean shouldSendAlert = isOnSale && !isTrailingSaleDay && doesPassThreshold;
 
         // If dissimilar truth values, invert isTrailingSaleDay and update the entry
         // in the server collection
         if (isOnSale && !isTrailingSaleDay || !isOnSale && isTrailingSaleDay) {
             isTrailingSaleDay = !isTrailingSaleDay;
             Bson fieldToUpdate = Updates.set(IS_TRAILING_SALE_DAY, isTrailingSaleDay);
-            getDiscord().updateOne(filterByServerId, fieldToUpdate);
+            getJunction().updateOne(filterByServerIdAndAppId, fieldToUpdate);
         }
 
         return shouldSendAlert;
@@ -255,7 +293,11 @@ public class Database {
      */
     public static boolean removeAppIdFromAServer(long serverId, long appId) {
         // Delete from junction collection
-        DeleteResult result = getJunction().deleteOne(new JunctionPojo(appId, serverId).toFilter());
+        Bson filterByServerIdAndAppId = Filters.and(
+                Filters.eq(SERVER_ID, serverId),
+                Filters.eq(APP_ID, appId)
+        );
+        DeleteResult result = getJunction().deleteOne(filterByServerIdAndAppId);
         // Check for deletion success
         if (!result.wasAcknowledged()) {
             return false;

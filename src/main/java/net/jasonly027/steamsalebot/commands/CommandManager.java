@@ -16,7 +16,8 @@ public class CommandManager extends ListenerAdapter {
             new AddApps(),
             new RemoveApps(),
             new Help(),
-            ClearAppsTracking.getCommand()
+            ClearAppsTracking.getCommand(),
+            new TestDailyCheck()
     };
     // If a command uses string select menu, add it here
     private static final StringSelectMenuInteraction[] stringSelectMenuCommands = {

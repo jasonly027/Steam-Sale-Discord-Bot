@@ -51,7 +51,9 @@ public class SteamApi {
      * @throws InterruptedException if the operation is interrupted
      */
     public static AppInfo getAppInfo(long appId) throws IOException, InterruptedException {
-        String appUrl = "https://store.steampowered.com/api/appdetails?appids=" + appId;
+        String appUrl = "https://store.steampowered.com/api/appdetails?appids="
+                + appId
+                + "&cc=US";
         HttpResponse<String> response = sendHttpRequest(createHttpGetRequest(appUrl));
 
         return getMapper().readValue(response.body(), AppInfo.class);
