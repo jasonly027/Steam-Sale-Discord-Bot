@@ -3,6 +3,7 @@ package net.jasonly027.steamsalebot.commands;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.jasonly027.steamsalebot.commands.slash.*;
 import org.jetbrains.annotations.NotNull;
