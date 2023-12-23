@@ -69,7 +69,7 @@ public class AddApps extends SlashCommand {
     }
 
     @Override
-    public void doInteraction(SlashCommandInteractionEvent event) {
+    public void doSlashInteraction(SlashCommandInteractionEvent event) {
         event.deferReply().queue();
 
         String appIds = event.getOption(APP_IDS).getAsString();

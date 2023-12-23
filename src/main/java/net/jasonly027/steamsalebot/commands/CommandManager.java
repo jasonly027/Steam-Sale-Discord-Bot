@@ -3,6 +3,7 @@ package net.jasonly027.steamsalebot.commands;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.jasonly027.steamsalebot.commands.slash.*;
 import org.jetbrains.annotations.NotNull;
@@ -14,8 +15,12 @@ public class CommandManager extends ListenerAdapter {
             new Bind(),
             new AddApps(),
             new RemoveApps(),
-            new AddApps(),
-            new Help()
+            new Help(),
+            ClearAppsTracking.getCommand()
+    };
+    // If a command uses string select menu, add it here
+    private static final StringSelectMenuInteraction[] stringSelectMenuCommands = {
+            ClearAppsTracking.getCommand()
     };
 
     // On bot startup, register commands to all joined guilds
@@ -37,7 +42,18 @@ public class CommandManager extends ListenerAdapter {
         String commandName = event.getName();
         for (SlashCommand command : commands) {
             if (commandName.equals(command.getName())) {
-                command.doInteraction(event);
+                command.doSlashInteraction(event);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onStringSelectInteraction(StringSelectInteractionEvent event) {
+        String componentName = event.getComponentId();
+        for (StringSelectMenuInteraction command : stringSelectMenuCommands) {
+            if (componentName.equals(command.getSelectMenuName())) {
+                command.doStringSelectInteraction(event);
                 break;
             }
         }

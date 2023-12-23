@@ -24,7 +24,7 @@ public class SetThreshold extends SlashCommand {
     }
 
     @Override
-    public void doInteraction(SlashCommandInteractionEvent event) {
+    public void doSlashInteraction(SlashCommandInteractionEvent event) {
         event.deferReply().queue();
 
         // get the threshold from the msg the user sent

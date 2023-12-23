@@ -10,7 +10,7 @@ public class Help extends SlashCommand {
     }
 
     @Override
-    public void doInteraction(SlashCommandInteractionEvent event) {
+    public void doSlashInteraction(SlashCommandInteractionEvent event) {
         event.replyEmbeds(createMessage()).queue();
     }
 

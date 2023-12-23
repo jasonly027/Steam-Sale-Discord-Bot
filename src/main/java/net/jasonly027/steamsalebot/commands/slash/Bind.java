@@ -36,7 +36,7 @@ public class Bind extends SlashCommand {
     }
 
     @Override
-    public void doInteraction(SlashCommandInteractionEvent event) {
+    public void doSlashInteraction(SlashCommandInteractionEvent event) {
         event.deferReply().queue();
 
         long channelId = event.getOption(CHANNEL).getAsLong();
