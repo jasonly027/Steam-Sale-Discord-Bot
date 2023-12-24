@@ -18,7 +18,6 @@ public class CommandManager extends ListenerAdapter {
             Help.getCommand(),
             ClearAppsTracking.getCommand(),
             ListApps.getCommand(),
-            TestDailyCheck.getCommand(),
             Search.getCommand()
     };
 

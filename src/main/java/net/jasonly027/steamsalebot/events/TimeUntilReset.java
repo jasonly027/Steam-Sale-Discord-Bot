@@ -11,17 +11,13 @@ import java.util.concurrent.TimeUnit;
 
 
 public class TimeUntilReset extends ListenerAdapter {
-
     @Override
     public void onReady(@NotNull ReadyEvent event){
         ScheduledExecutorService scheduler = Scheduler.getScheduler();
-        String convertedTime = convertTime(OnDailyCheck.getTimeTillNextCheckInMinutes());
-        scheduler.scheduleAtFixedRate(setStatus(convertedTime, event), 0, 1, TimeUnit.MINUTES);
-    }
-
-    private static Runnable setStatus(String timeLeft, ReadyEvent event){
-        event.getJDA().getPresence().setActivity(Activity.customStatus(timeLeft + " until reset."));
-        return null;
+        Runnable updateStatus = () -> event.getJDA().getPresence()
+                .setActivity(Activity.customStatus(
+                        convertTime(OnDailyCheck.getTimeTillNextCheckInMinutes()) + " until reset"));
+        scheduler.scheduleAtFixedRate(updateStatus, 0, 1, TimeUnit.MINUTES);
     }
 
     /*This method takes in an int minutes and converts it into hours and the remaining minutes and returns it as a string.*/
@@ -34,5 +30,4 @@ public class TimeUntilReset extends ListenerAdapter {
 
         return hours + " hours and " + remainingMinutes + " minutes";
     }
-
 }

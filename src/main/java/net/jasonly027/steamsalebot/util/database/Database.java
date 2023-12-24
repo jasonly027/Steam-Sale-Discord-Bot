@@ -237,10 +237,14 @@ public class Database {
         upsertAppIdToAppsCollection(appPojo);
 
         // Check if not already in the collection then add to collection
-        JunctionPojo entry = new JunctionPojo(appPojo.appId, serverId);
-        if (getJunction().find(entry.toFilter()).first() != null) {
+        Bson filterByServerIdAndAppId = Filters.and(
+                Filters.eq(SERVER_ID, serverId),
+                Filters.eq(APP_ID, appId)
+        );
+        if (getJunction().find(filterByServerIdAndAppId).first() != null) {
             return true;
         }
+        JunctionPojo entry = new JunctionPojo(appPojo.appId, serverId);
         return getJunction().insertOne(entry).wasAcknowledged();
     }
 
