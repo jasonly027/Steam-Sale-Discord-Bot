@@ -2,9 +2,11 @@ package net.jasonly027.steamsalebot.steam;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -99,7 +101,8 @@ public class SteamApi {
      * @return the search results of the query or null if it failed
      */
     public static SearchResult[] getSearchResults(String query) {
-        String searchUrl = "https://steamcommunity.com/actions/SearchApps/" + query;
+        String searchUrl = "https://steamcommunity.com/actions/SearchApps/"
+                + URLEncoder.encode(query, StandardCharsets.UTF_8);
         try {
             HttpResponse<String> response = sendHttpRequest(createHttpGetRequest(searchUrl));
             return getMapper().readValue(response.body(), SearchResult[].class);
