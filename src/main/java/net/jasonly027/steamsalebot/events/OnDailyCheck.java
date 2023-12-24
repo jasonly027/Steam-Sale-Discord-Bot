@@ -19,7 +19,6 @@ import net.jasonly027.steamsalebot.util.database.pojos.JunctionPojo;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.io.IOException;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Executors;
@@ -72,11 +71,8 @@ public class OnDailyCheck extends ListenerAdapter {
         // specified for a chunk has been reached.
         while (calls < CALLS_PER_INTERVAL && appCursor.hasNext()) {
             AppPojo appPojo = appCursor.next();
-            AppInfo appInfo = null;
             // API Call - Skip if call fails
-            try {
-                appInfo = SteamApi.getAppInfo(appPojo.appId);
-            } catch (IOException | InterruptedException ignored) {}
+            AppInfo appInfo = SteamApi.getAppInfo(appPojo.appId);
             if (appInfo == null || !appInfo.isSuccess()) {
                 ++calls;
                 continue;

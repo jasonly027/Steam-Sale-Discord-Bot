@@ -9,7 +9,6 @@ import net.jasonly027.steamsalebot.steam.SteamApi;
 import net.jasonly027.steamsalebot.util.database.Database;
 import net.jasonly027.steamsalebot.util.database.pojos.AppPojo;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -99,11 +98,8 @@ public class AddApps extends SlashCommand {
         List<AppPojo> validAppIds = new ArrayList<>(INITIAL_CAPACITY);
         List<Long> badAppIds = new ArrayList<>(INITIAL_CAPACITY);
         for (long appId : appIdsAsLongs) {
-            String appName = null;
-            try {
-                appName = SteamApi.getAppName(appId);
-            } catch (IOException | InterruptedException ignored) {}
-
+            // API Call - Add to bad apps if it failed
+            String appName = SteamApi.getAppName(appId);
             if (appName != null) {
                 validAppIds.add(new AppPojo(appId, appName));
             } else {
