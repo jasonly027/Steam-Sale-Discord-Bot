@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.jasonly027.steamsalebot.commands.CommandManager;
 import net.jasonly027.steamsalebot.events.OnDailyCheck;
 import net.jasonly027.steamsalebot.events.OnGuildJoinLeave;
+import net.jasonly027.steamsalebot.events.TimeUntilReset;
 
 public class SteamSaleBot {
     private final ShardManager shardManager;
@@ -21,7 +22,8 @@ public class SteamSaleBot {
                 .addEventListeners(
                         new CommandManager(),
                         new OnGuildJoinLeave(),
-                        new OnDailyCheck()
+                        new OnDailyCheck(),
+                        new TimeUntilReset()
                 );
 
         shardManager = builder.build();

@@ -60,7 +60,6 @@ public class OnDailyCheck extends ListenerAdapter {
      * The number of calls in each chunk is specified below.
      */
     private static void doDailyCheckChunk(MongoCursor<AppPojo> appCursor) {
-        System.out.println("Starting check chnk");
         final int REST_INTERVAL_IN_MINUTES = 5;
         final int CALLS_PER_INTERVAL = 150;
 
@@ -72,7 +71,6 @@ public class OnDailyCheck extends ListenerAdapter {
             // API Call - Skip if call fails
             AppInfo appInfo = SteamApi.getAppInfo(appPojo.appId);
             if (appInfo == null || !appInfo.isSuccess()) {
-                System.out.println("Call failed");
                 ++calls;
                 continue;
             }
