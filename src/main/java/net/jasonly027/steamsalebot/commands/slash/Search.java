@@ -11,16 +11,16 @@ import net.jasonly027.steamsalebot.steam.SearchResult;
 import net.jasonly027.steamsalebot.steam.SteamApi;
 import net.jasonly027.steamsalebot.util.database.Database;
 
-public class SearchForApp extends SlashCommand implements StringSelectMenuInteraction {
+public class Search extends SlashCommand implements StringSelectMenuInteraction {
     private static final String QUERY = "query";
     private static final String CANCEL_OPTION = "589034812_CANCEL_20913198";
 
     private final String selectMenuName = "app";
 
-    private static final SearchForApp command = new SearchForApp();
+    private static final Search command = new Search();
 
-    private SearchForApp() {
-        super("search_for_app", "Search for an app and add it to the tracking list.");
+    private Search() {
+        super("search", "Search for an app and add it to the tracking list.");
 
         OptionData query = new OptionData(OptionType.STRING,
                 QUERY, "Search query.", true)
@@ -28,7 +28,7 @@ public class SearchForApp extends SlashCommand implements StringSelectMenuIntera
         addOptions(query);
     }
 
-    public static SearchForApp getCommand() {
+    public static Search getCommand() {
         return command;
     }
 

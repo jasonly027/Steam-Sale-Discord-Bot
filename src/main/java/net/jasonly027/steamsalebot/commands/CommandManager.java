@@ -19,13 +19,13 @@ public class CommandManager extends ListenerAdapter {
             ClearAppsTracking.getCommand(),
             ListApps.getCommand(),
             TestDailyCheck.getCommand(),
-            SearchForApp.getCommand()
+            Search.getCommand()
     };
 
     // If a command uses string select menu, add it here
     private static final StringSelectMenuInteraction[] stringSelectMenuCommands = {
             ClearAppsTracking.getCommand(),
-            SearchForApp.getCommand()
+            Search.getCommand()
     };
 
     // On bot startup, register commands to all joined guilds
