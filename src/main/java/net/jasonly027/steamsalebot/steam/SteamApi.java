@@ -2,9 +2,11 @@ package net.jasonly027.steamsalebot.steam;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,33 +47,37 @@ public class SteamApi {
      * field is false, the other fields will not be set. If the POJO's isFree field is true,
      * the fields related to price will not be set, otherwise they will be set.
      * @param appId id of the app to which details are requested
-     * @return a POJO of the app's details
-     * @throws IOException If the response status code was not 200, or if an I/O error
-     * occurs when sending or receiving
-     * @throws InterruptedException if the operation is interrupted
+     * @return a POJO of the app's details or null if HTTP/deserialization failure
      */
-    public static AppInfo getAppInfo(long appId) throws IOException, InterruptedException {
+    public static AppInfo getAppInfo(long appId) {
         String appUrl = "https://store.steampowered.com/api/appdetails?appids="
                 + appId
                 + "&cc=US";
-        HttpResponse<String> response = sendHttpRequest(createHttpGetRequest(appUrl));
-
-        return getMapper().readValue(response.body(), AppInfo.class);
+        try {
+            HttpResponse<String> response = sendHttpRequest(createHttpGetRequest(appUrl));
+            return getMapper().readValue(response.body(), AppInfo.class);
+        } catch (IOException | InterruptedException e) {
+            return null;
+        }
     }
 
     /**
      * Get the app name of the specified <b>appId</b>.
      * @param appId id of the app
-     * @return the name of the app or <b>null</b> if either the appId was invalid or
-     * the app is free.
-     * @throws IOException If the response status code was not 200, or if an I/O error
-     * occurs when sending or receiving
-     * @throws InterruptedException if the operation is interrupted
+     * @return the name of the app or <b>null</b> if either the appId was invalid,
+     * the app was free, or HTTP/deserialization failure
      */
-    public static String getAppName(long appId) throws IOException, InterruptedException {
+    public static String getAppName(long appId) {
         String appUrl = "https://store.steampowered.com/api/appdetails?appids=" + appId;
-        HttpResponse<String> response = sendHttpRequest(createHttpGetRequest(appUrl));
-        JsonNode root = getMapper().readTree(response.body());
+        HttpResponse<String> response;
+        JsonNode root;
+        try {
+            response = sendHttpRequest(createHttpGetRequest(appUrl));
+            root = getMapper().readTree(response.body());
+        } catch (IOException | InterruptedException e) {
+            return null;
+        }
+
         String appField = root.fieldNames().next();
         root = root.get(appField);
 
@@ -87,5 +93,21 @@ public class SteamApi {
         }
 
         return data.get("name").textValue();
+    }
+
+    /**
+     * Get app search results of the given <i>query</i>.
+     * @param query exact or partial name of the app to be searched
+     * @return the search results of the query or null if it failed
+     */
+    public static SearchResult[] getSearchResults(String query) {
+        String searchUrl = "https://steamcommunity.com/actions/SearchApps/"
+                + URLEncoder.encode(query, StandardCharsets.UTF_8);
+        try {
+            HttpResponse<String> response = sendHttpRequest(createHttpGetRequest(searchUrl));
+            return getMapper().readValue(response.body(), SearchResult[].class);
+        } catch (IOException | InterruptedException e) {
+            return null;
+        }
     }
 }

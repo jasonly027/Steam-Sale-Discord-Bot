@@ -4,12 +4,18 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.jasonly027.steamsalebot.events.OnDailyCheck;
 
 public class TestDailyCheck extends SlashCommand {
-    public TestDailyCheck() {
+    private static final TestDailyCheck command = new TestDailyCheck();
+
+    private TestDailyCheck() {
         super("test_daily_check_test", "Test Daily Check");
     }
 
+    public static TestDailyCheck getCommand() {
+        return command;
+    }
+
     @Override
-    public void doInteraction(SlashCommandInteractionEvent event) {
+    public void doSlashInteraction(SlashCommandInteractionEvent event) {
         event.reply("Testing").queue();
         OnDailyCheck.startDailyCheck();
     }

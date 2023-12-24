@@ -13,33 +13,29 @@ import net.jasonly027.steamsalebot.SteamSaleBot;
 import net.jasonly027.steamsalebot.steam.AppInfo;
 import net.jasonly027.steamsalebot.steam.SteamApi;
 import net.jasonly027.steamsalebot.util.database.Database;
+import net.jasonly027.steamsalebot.util.Scheduler;
 import net.jasonly027.steamsalebot.util.database.pojos.AppPojo;
 import net.jasonly027.steamsalebot.util.database.pojos.DiscordPojo;
 import net.jasonly027.steamsalebot.util.database.pojos.JunctionPojo;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.io.IOException;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class OnDailyCheck extends ListenerAdapter {
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         // Perform a check every 24 hours
         final int CHECK_INTERVAL_IN_MINUTES = 1440;
 
-        scheduler.scheduleAtFixedRate(OnDailyCheck::startDailyCheck,
-                getInitialDelay(), CHECK_INTERVAL_IN_MINUTES, TimeUnit.MINUTES);
+        Scheduler.getScheduler().scheduleAtFixedRate(OnDailyCheck::startDailyCheck,
+                getTimeTillNextCheckInMinutes(), CHECK_INTERVAL_IN_MINUTES, TimeUnit.MINUTES);
     }
 
     // Get the time in minutes until the next 10:05 A.M.
-    public static long getInitialDelay() {
+    public static long getTimeTillNextCheckInMinutes() {
         final int HOUR_OF_THE_DAY_TO_CHECK = 10;
         final int MINUTE_OF_THE_HOUR_TO_CHECK = 5;
 
@@ -63,7 +59,8 @@ public class OnDailyCheck extends ListenerAdapter {
      * The amount of time we wait between calls is specified below.
      * The number of calls in each chunk is specified below.
      */
-    public static void doDailyCheckChunk(MongoCursor<AppPojo> appCursor) {
+    private static void doDailyCheckChunk(MongoCursor<AppPojo> appCursor) {
+        System.out.println("Starting check chnk");
         final int REST_INTERVAL_IN_MINUTES = 5;
         final int CALLS_PER_INTERVAL = 150;
 
@@ -72,12 +69,10 @@ public class OnDailyCheck extends ListenerAdapter {
         // specified for a chunk has been reached.
         while (calls < CALLS_PER_INTERVAL && appCursor.hasNext()) {
             AppPojo appPojo = appCursor.next();
-            AppInfo appInfo = null;
             // API Call - Skip if call fails
-            try {
-                appInfo = SteamApi.getAppInfo(appPojo.appId);
-            } catch (IOException | InterruptedException ignored) {}
+            AppInfo appInfo = SteamApi.getAppInfo(appPojo.appId);
             if (appInfo == null || !appInfo.isSuccess()) {
+                System.out.println("Call failed");
                 ++calls;
                 continue;
             }
@@ -134,13 +129,13 @@ public class OnDailyCheck extends ListenerAdapter {
         }
         // If the cursor was not exhausted, schedule another chunk
         if (appCursor.hasNext()) {
-            scheduler.schedule(() -> doDailyCheckChunk(appCursor), REST_INTERVAL_IN_MINUTES, TimeUnit.MINUTES);
+            Scheduler.getScheduler().schedule(() -> doDailyCheckChunk(appCursor), REST_INTERVAL_IN_MINUTES, TimeUnit.MINUTES);
         } else {
             appCursor.close();
         }
     }
 
-    public static MessageEmbed createSaleMessage(AppInfo app) {
+    private static MessageEmbed createSaleMessage(AppInfo app) {
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle(app.getName() + " is on sale for " + app.getDiscountPercent() + "% off!",
                         app.getStorePageUrl())
@@ -152,7 +147,7 @@ public class OnDailyCheck extends ListenerAdapter {
         return builder.build();
     }
 
-    public static Color getColorBySalePercentage(int discountPercentage) {
+    private static Color getColorBySalePercentage(int discountPercentage) {
         if ((discountPercentage >= 1) && (discountPercentage <= 5)) {
             return new Color(11, 255, 51);
         }
