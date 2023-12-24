@@ -32,6 +32,8 @@ public class Help extends SlashCommand {
                         "Add comma separated app IDs to the tracker.", false)
                 .addField("/remove_apps <appId,appId,...>",
                         "Remove comma separated app IDs from the tracker.", false)
+                .addField("/search <query>",
+                        "Search for an app to add to the tracker.", false)
                 .addField("/list_apps",
                         "List all the apps currently being tracked.", false)
                 .addField("/clear_apps",
