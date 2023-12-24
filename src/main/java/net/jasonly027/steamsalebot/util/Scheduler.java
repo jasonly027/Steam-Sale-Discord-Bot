@@ -1,4 +1,4 @@
-package net.jasonly027.steamsalebot.util.database;
+package net.jasonly027.steamsalebot.util;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

@@ -13,7 +13,7 @@ import net.jasonly027.steamsalebot.SteamSaleBot;
 import net.jasonly027.steamsalebot.steam.AppInfo;
 import net.jasonly027.steamsalebot.steam.SteamApi;
 import net.jasonly027.steamsalebot.util.database.Database;
-import net.jasonly027.steamsalebot.util.database.Scheduler;
+import net.jasonly027.steamsalebot.util.Scheduler;
 import net.jasonly027.steamsalebot.util.database.pojos.AppPojo;
 import net.jasonly027.steamsalebot.util.database.pojos.DiscordPojo;
 import net.jasonly027.steamsalebot.util.database.pojos.JunctionPojo;
