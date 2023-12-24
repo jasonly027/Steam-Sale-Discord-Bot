@@ -8,5 +8,5 @@ public abstract class SlashCommand extends CommandDataImpl {
         super(name, description);
     }
 
-    abstract public void doInteraction(SlashCommandInteractionEvent event);
+    abstract public void doSlashInteraction(SlashCommandInteractionEvent event);
 }

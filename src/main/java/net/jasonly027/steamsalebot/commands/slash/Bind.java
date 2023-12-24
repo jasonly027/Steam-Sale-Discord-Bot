@@ -11,7 +11,9 @@ import net.jasonly027.steamsalebot.util.database.Database;
 public class Bind extends SlashCommand {
     private static final String CHANNEL = "channel";
 
-    public Bind() {
+    private static final Bind command = new Bind();
+
+    private Bind() {
         super("bind", "Set the channel to where alerts are sent.");
 
         OptionData channel = new OptionData(OptionType.CHANNEL,
@@ -20,7 +22,11 @@ public class Bind extends SlashCommand {
         addOptions(channel);
     }
 
-    public static MessageEmbed createSuccessMessage(String channel) {
+    public static Bind getCommand() {
+        return command;
+    }
+
+    private static MessageEmbed createSuccessMessage(String channel) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle("Successfully Updated Channel ID")
                 .setDescription("Sale alerts will now be sent to "
@@ -28,7 +34,7 @@ public class Bind extends SlashCommand {
         return builder.build();
     }
 
-    public static MessageEmbed createFailureMessage() {
+    private static MessageEmbed createFailureMessage() {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle("Failed to Update Channel ID")
                 .setDescription("Update failed. Please try again.");
@@ -36,7 +42,7 @@ public class Bind extends SlashCommand {
     }
 
     @Override
-    public void doInteraction(SlashCommandInteractionEvent event) {
+    public void doSlashInteraction(SlashCommandInteractionEvent event) {
         event.deferReply().queue();
 
         long channelId = event.getOption(CHANNEL).getAsLong();
