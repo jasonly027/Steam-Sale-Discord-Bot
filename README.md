@@ -6,7 +6,7 @@ A java based Discord bot that lets the server know when the games they're keepin
 * [Jason Ly](https://github.com/jasonly027/)
 * [My Nguyen](https://mynguyen.vercel.app/)
 
-## [Invite link](https://discord.com/api/oauth2/authorizeclient_id=1186785835866132540&permissions=51200&scope=bot)
+## [Invite link](https://discord.com/api/oauth2/authorize?client_id=1186785835866132540&permissions=51200&scope=bot)
 
 ## Commands:
 * /bind <text_channel> → Set the channel to where sale alerts are sent.
