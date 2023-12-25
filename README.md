@@ -14,7 +14,6 @@
         Invite Link
     </a>
 </h2>
-<hr>
 
 ## Commands and FAQ
 <img src="images/CommandsAndFAQ.jpg" alt="Commands and FAQ">
@@ -22,8 +21,8 @@
 ## Screenshots
 <img src="images/DiscordStatus.jpg" alt="Discord Status">
 <img src="images/SaleAlerts.jpg" alt="Sale Alerts">
-<img src="images/SearchLethal.jpg" alt="Search for Lethal">
-<img src="images/SearchResultLethal.jpg" alt="Search result for Lethal">
+<img src="images/SearchLethal.jpg" alt="Search for Lethal" width="400">
+<img src="images/SearchResultLethal.jpg" alt="Search result for Lethal" width="400">
 
 ## Technologies
 - <b><a href="https://github.com/discord-jda/JDA">JDA</a></b> - A Java wrapper 
