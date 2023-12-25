@@ -1,32 +1,39 @@
-# Steam Sale Discord Bot
+<h1 align="center">Steam Sale Bot</h1>
 
-A java based Discord bot that lets the server know when the games they're keeping track of goes on sale.
+<p align="center">
+    <img src="images/ProfilePicture.png" width="300" height="300" alt="Profile Picture">
+</p>
 
-### Authors:
+<p align="center">
+    A Java based Discord bot that tracks Steam apps of your choice and sends
+    alerts when they go on sale.
+</p>
+
+<h2 align="center">
+    <a href="https://discord.com/api/oauth2/authorize?client_id=1186785835866132540&permissions=51200&scope=bot">
+        Invite Link
+    </a>
+</h2>
+<hr>
+
+## Commands and FAQ
+<img src="images/CommandsAndFAQ.jpg" alt="Commands and FAQ">
+
+## Screenshots
+<img src="images/DiscordStatus.jpg" alt="Discord Status">
+<img src="images/SaleAlerts.jpg" alt="Sale Alerts">
+<img src="images/SearchLethal.jpg" alt="Search for Lethal">
+<img src="images/SearchResultLethal.jpg" alt="Search result for Lethal">
+
+## Technologies
+- <b><a href="https://github.com/discord-jda/JDA">JDA</a></b> - A Java wrapper 
+    for Discord's REST API and WebSocket-Events.
+- <b><a href=https://github.com/Revadike/InternalSteamWebAPI>Steam's Internal Web API</a></b> -
+    Community-driven documentation of the API can be accessed there.
+- <b><a href=https://github.com/FasterXML/jackson>Jackson</a></b> - A Java JSON library. 
+  Used for deserializing Steam's IWA endpoints.
+- <b><a href=https://www.mongodb.com/>MongoDB</a></b> - A NoSQL database in the cloud for storage
+
+## Authors
 * [Jason Ly](https://github.com/jasonly027/)
 * [My Nguyen](https://mynguyen.vercel.app/)
-
-## [Invite link](https://discord.com/api/oauth2/authorize?client_id=1186785835866132540&permissions=51200&scope=bot)
-
-## Commands:
-* /bind <text_channel> → Set the channel to where sale alerts are sent.
-* * By default, sends to the default channel.
-* /set_discount_threshold <_percentage_> → Set the minimum discount percentage warranting an alert of an app sale. 
-* * By default, the threshold is 1%
-* /add_apps <appId,appId,...> → Adds app(s) to list being tracked for sale by server.
-* * Add comma separated app IDs to the tracker.
-* * App IDs can be retrieved from its respective steam link (in the url)
-* /remove_apps <appId,appId,...> → Remove comma separated app IDs from the tracker.
-* /search <query> → Search for an app to add to the tracker.
-* /list_apps → List all the apps currently being tracked.
-* /clear_apps → Clear the tracking list.
-
-## FAQs:
-* How often does the bot check for sales?
-* * The bot checks for sales every day at about **10:05 AM (PDT)**.
-* Why aren't alerts showing up?
-* * Reconfigure your discount threshold in case it is too high.
-* * Additionally, try rebinding to a text channel.
-* The app is still on sale but there wasn't an alert.
-* * Alerts for an app are only sent on the first day of a sale duration
-* * or, when added *during* a sale, on the following daily check.
