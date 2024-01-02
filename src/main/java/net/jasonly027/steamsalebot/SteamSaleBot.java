@@ -15,7 +15,7 @@ public class SteamSaleBot {
     private static final SteamSaleBot bot = new SteamSaleBot();
 
     private SteamSaleBot() {
-        final String DISCORD_KEY = App.config.get("DISCORD_KEY");
+        final String DISCORD_KEY = System.getenv("DISC_KEY");
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(DISCORD_KEY)
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
