@@ -30,4 +30,8 @@ public class TimeUntilReset extends ListenerAdapter {
 
         return hours + " hours and " + remainingMinutes + " minutes";
     }
+
+    public static void main(String[] args) {
+        System.out.println(convertTime(OnDailyCheck.getTimeTillNextCheckInMinutes()));
+    }
 }
