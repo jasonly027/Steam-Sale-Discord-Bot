@@ -6,7 +6,6 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
-import net.jasonly027.steamsalebot.App;
 import net.jasonly027.steamsalebot.util.database.pojos.AppPojo;
 import net.jasonly027.steamsalebot.util.database.pojos.DiscordPojo;
 import net.jasonly027.steamsalebot.util.database.pojos.JunctionPojo;
@@ -44,7 +43,7 @@ public class Database {
 
     private Database() {
         // Connection information
-        final String DB_KEY = App.config.get(("DB_KEY"));
+        final String DB_KEY = System.getenv("DB_KEY");
         final String DB_NAME = "SteamSaleBot";
         final String APPS_COLLECTION = "apps";
         final String JUNCTION_COLLECTION = "junction";
@@ -208,6 +207,7 @@ public class Database {
      * @return true if the update was successful or if entry doesn't exist
      */
     public static boolean updateChannelIdOfAServer(long serverId, long newChannelId) {
+        addServerToDiscordCollection(serverId, newChannelId);
         Bson filterByServerId = Filters.eq(SERVER_ID, serverId);
         Bson fieldToUpdate = Updates.set(CHANNEL_ID, newChannelId);
         return getDiscord().updateOne(filterByServerId, fieldToUpdate).wasAcknowledged();
