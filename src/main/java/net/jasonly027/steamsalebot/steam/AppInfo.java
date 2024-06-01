@@ -140,19 +140,23 @@ public class AppInfo {
             root = root.get(appField);
 
             AppInfo appInfo = new AppInfo();
-            appInfo.setSuccess(root.get("success").asBoolean());
-
             // Do not continue deserialization if unsuccessful, i.e., the app id was invalid
-            if (!appInfo.success) {
+            if (!root.path("success").asBoolean()) {
+                appInfo.setSuccess(false);
                 return appInfo;
             }
+            appInfo.setSuccess(true);
 
-            JsonNode data = root.get("data");
-            appInfo.setName(data.get("name").textValue())
-                    .setBannerUrl(data.get("header_image").textValue())
-                    .setStorePageUrl("https://store.steampowered.com/app/" + data.get("steam_appid").asInt())
-                    .setRecommendationsCount(data.get("recommendations").get("total").asInt())
-                    .setFree(data.get("is_free").asBoolean());
+            JsonNode data = root.path("data");
+            if (data.isMissingNode()) {
+                appInfo.setSuccess(false);
+                return appInfo;
+            }
+            appInfo.setName(data.path("name").textValue())
+                    .setBannerUrl(data.path("header_image").textValue())
+                    .setStorePageUrl("https://store.steampowered.com/app/" + data.path("steam_appid").asInt())
+                    .setRecommendationsCount(data.path("recommendations").path("total").asInt())
+                    .setFree(data.path("is_free").asBoolean());
 
             // Do not continue deserialization if the app is free, because
             // the "price_overview" field will not exist for free apps.
@@ -160,10 +164,14 @@ public class AppInfo {
                 return appInfo;
             }
 
-            JsonNode priceOverview = data.get("price_overview");
-            appInfo.setDiscountPercent(priceOverview.get("discount_percent").asInt())
-                    .setOriginalPrice(priceOverview.get("initial_formatted").textValue())
-                    .setSalePrice(priceOverview.get("final_formatted").textValue());
+            JsonNode priceOverview = data.path("price_overview");
+            if (priceOverview.isMissingNode()) {
+                appInfo.setSuccess(false);
+                return appInfo;
+            }
+            appInfo.setDiscountPercent(priceOverview.path("discount_percent").asInt())
+                    .setOriginalPrice(priceOverview.path("initial_formatted").textValue())
+                    .setSalePrice(priceOverview.path("final_formatted").textValue());
 
             return appInfo;
         }
