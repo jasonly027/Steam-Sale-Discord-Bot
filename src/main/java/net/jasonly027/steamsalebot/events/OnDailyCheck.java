@@ -40,15 +40,15 @@ public class OnDailyCheck extends ListenerAdapter {
         final int MINUTE_OF_THE_HOUR_TO_CHECK = 5;
 
         ZoneId pst = ZoneId.of("PST", ZoneId.SHORT_IDS);
-        LocalTime nowTime = LocalTime.now(pst);
-        LocalTime thenTime = LocalTime.of(HOUR_OF_THE_DAY_TO_CHECK, MINUTE_OF_THE_HOUR_TO_CHECK, 0);
-        LocalDateTime nextThenDay;
-        if (nowTime.isBefore(thenTime)) {
-            nextThenDay = LocalDateTime.of(LocalDate.now(pst), thenTime);
-        } else {
-            nextThenDay = LocalDateTime.of(LocalDate.now(pst).plusDays(1), thenTime);
+        ZonedDateTime now = ZonedDateTime.now(pst);
+        LocalTime checkTime = LocalTime.of(HOUR_OF_THE_DAY_TO_CHECK, MINUTE_OF_THE_HOUR_TO_CHECK);
+
+        ZonedDateTime nextCheckTime = now.with(checkTime);
+        if (now.isAfter(nextCheckTime)) {
+            nextCheckTime = nextCheckTime.plusDays(1);
         }
-        return ChronoUnit.MINUTES.between(LocalDateTime.now(pst), nextThenDay);
+
+        return ChronoUnit.MINUTES.between(now, nextCheckTime);
     }
 
     public static void startDailyCheck() {
