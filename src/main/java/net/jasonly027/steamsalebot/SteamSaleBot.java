@@ -1,6 +1,5 @@
 package net.jasonly027.steamsalebot;
 
-import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -18,7 +17,6 @@ public class SteamSaleBot {
         final String DISCORD_KEY = System.getenv("DISC_KEY");
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(DISCORD_KEY)
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
-                .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                 .addEventListeners(
                         new CommandManager(),
                         new OnGuildJoinLeave(),
