@@ -1,4 +1,8 @@
-<h1 align="center">Steam Sale Bot</h1>
+<h1 align="center">Steam Sale Bot (Outdated)</h1>
+
+<p align="center">
+    Note: Check out the newer version of this bot <a href="https://github.com/jasonly027/steam_sale_discord_bot_go" target="_blank">here</a>
+</p>
 
 <p align="center">
     <img src="images/ProfilePicture.png" width="300" height="300" alt="Profile Picture">
